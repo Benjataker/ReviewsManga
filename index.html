@@ -185,89 +185,16 @@
             
             <div class="flex items-center gap-4">
                 <div class="flex gap-3 pr-4 border-r border-gray-700 admin-only-flex">
+                    <!-- Botón Sincronizar (nuevo) -->
+                    <button onclick="syncFromRemote()" class="data-action-icon" title="Sincronizar con repositorio">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
                     <input type="file" id="importFile" class="hidden" accept=".json" onchange="importData(event)">
                     <button onclick="document.getElementById('importFile').click()" class="data-action-icon" title="Importar">
                         <i class="fas fa-file-import"></i>
                     </button>
                     <button onclick="exportData()" class="data-action-icon" title="Exportar">
                         <i class="fas fa-file-export"></i>
-                    </button>
-                </div>
-
-                <script>
-                    function exportData() {
-                        const data = {
-                            reviews: JSON.parse(localStorage.getItem('myReviews_manga')) || [],
-                            suggestions: JSON.parse(localStorage.getItem('manga_suggestions')) || [],
-                            customGenres: JSON.parse(localStorage.getItem('customGenres_manga')) || []
-                        };
-                        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `manga_archive_backup_${new Date().toISOString().slice(0,10)}.json`;
-                        a.click();
-                        URL.revokeObjectURL(url);
-                        showToast("ARCHIVO EXPORTADO");
-                    }
-
-                    function importData(event) {
-
-                        const file = event.target.files[0];
-
-                        if (!file) return;
-
-                        const reader = new FileReader();
-
-                        reader.onload = function(e) {
-
-                        try {
-
-                        const data = JSON.parse(e.target.result);
-
-                        reviews = data.reviews || [];
-                        suggestions = data.suggestions || [];
-                        customGenres = data.customGenres || [];
-
-                        localStorage.setItem(
-                        'myReviews_manga',
-                        JSON.stringify(reviews)
-                        );
-
-                        localStorage.setItem(
-                        'manga_suggestions',
-                        JSON.stringify(suggestions)
-                        );
-
-                        localStorage.setItem(
-                        'customGenres_manga',
-                        JSON.stringify(customGenres)
-                        );
-
-                        renderGenreCloud();
-                        renderReviews();
-
-                        showToast("DATOS IMPORTADOS");
-
-                        } catch(err) {
-
-                        console.error(err);
-
-                        alert(
-                        err.name +
-                        "\n\n" +
-                        err.message
-                        );
-
-                        showToast("JSON INVÁLIDO");
-                    
-                        }
-
-                    };
-
-    reader.readAsText(file);
-                }
-                </script>
                     </button>
                 </div>
 
@@ -383,8 +310,6 @@
             </div>
         </section>
 
-
-
         <!-- Listado Principal -->
         <section id="list-section" class="lg:col-span-8">
             <div class="flex flex-col gap-8">
@@ -409,7 +334,7 @@
                 <!-- Contenido de Sugerencias (Formulario de envío) -->
                 <div id="suggestion-form-container" class="hidden mb-4">
                     <div class="manga-panel p-4 bg-yellow-50 border-dashed max-w-3xl mx-auto">
-                        <h3 class="text-xl font-black mb-4 uppercase italic italic"><i class="fas fa-paper-plane mr-2"></i>¿Qué debería leer después?</h3>
+                        <h3 class="text-xl font-black mb-4 uppercase italic"><i class="fas fa-paper-plane mr-2"></i>¿Qué debería leer después?</h3>
                         <div class="flex flex-col md:flex-row gap-3">
                             <input type="text" id="suggest-title" placeholder="Título del Manga" class="px-4 py-2 border-2 border-black font-bold outline-none">
                             <input type="text" id="suggest-author" placeholder="Autor" class="px-4 py-2 border-2 border-black font-bold outline-none">
@@ -467,46 +392,62 @@
 
         const baseGenres = ["Nekketsu", "Mecha", "Isekai", "Spokon", "Cyberpunk", "Horror", "Fantasía", "Romance", "Acción", "Drama", "Manga", "Manwha", "Donhua"];
 
+        // ---------- FUNCIÓN PARA CARGAR DATOS DESDE EL REPOSITORIO ----------
+        async function loadRemoteData() {
+            try {
+                const response = await fetch('./archivos json/datos.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                // Validar estructura básica
+                if (data.reviews && Array.isArray(data.reviews)) {
+                    reviews = data.reviews;
+                }
+                if (data.suggestions && Array.isArray(data.suggestions)) {
+                    suggestions = data.suggestions;
+                }
+                if (data.customGenres && Array.isArray(data.customGenres)) {
+                    customGenres = data.customGenres;
+                }
+                // Guardar en localStorage para uso offline
+                localStorage.setItem('myReviews_manga', JSON.stringify(reviews));
+                localStorage.setItem('manga_suggestions', JSON.stringify(suggestions));
+                localStorage.setItem('customGenres_manga', JSON.stringify(customGenres));
+                showToast('DATOS CARGADOS DESDE EL REPOSITORIO');
+                // Refrescar toda la UI
+                renderGenreCloud();
+                renderReviews();
+                populateGenreFilter();
+            } catch (error) {
+                console.warn('No se pudo cargar el archivo remoto. Usando datos locales (si existen).', error);
+                // No mostramos toast para no molestar, pero sí en consola
+            }
+        }
+
+        // Función para sincronizar manualmente (botón)
+        async function syncFromRemote() {
+            await loadRemoteData();
+        }
+
+        // ---------- RESTO DE FUNCIONES (sin cambios relevantes) ----------
         function initializeSliders() {
             document.querySelectorAll('.rating-item')
                 .forEach(item => {
-
-                const slider =
-                    item.querySelector(
-                    'input[type="range"]'
-                    );
-
-                const display =
-                    item.querySelector(
-                    '.val-display'
-                    );
-
-                if(!slider || !display)
-                    return;
-
-                display.textContent =
-                    slider.value;
-
+                const slider = item.querySelector('input[type="range"]');
+                const display = item.querySelector('.val-display');
+                if(!slider || !display) return;
+                display.textContent = slider.value;
                 slider.oninput = function(){
-
-                display.textContent =
-                    this.value;
-
-            };});}
-
-        function toggleVillainRating(enabled) {
-
-        const container =
-        document.getElementById(
-            'villain_slider_container'
-        );
-
-        container.style.display =
-        enabled
-        ? 'block'
-        : 'none';
+                    display.textContent = this.value;
+                };
+            });
         }
 
+        function toggleVillainRating(enabled) {
+            const container = document.getElementById('villain_slider_container');
+            container.style.display = enabled ? 'block' : 'none';
+        }
 
         function toggleAdminMode() {
             if (document.body.classList.contains('is-admin')) {
@@ -539,57 +480,26 @@
             updateLayout();
         }
 
-       function updateLayout() {
-            const sidebar =
-                document.getElementById(
-                'admin-sidebar'
-                );
-
-            const listSection =
-                document.getElementById(
-                'list-section'
-                );
-
-            const adminMode =
-                document.body.classList.contains(
-                'is-admin'
-                );
+        function updateLayout() {
+            const sidebar = document.getElementById('admin-sidebar');
+            const listSection = document.getElementById('list-section');
+            const adminMode = document.body.classList.contains('is-admin');
 
             if(activeTab === 'suggestions') {
-
                 sidebar.style.display = 'none';
-
-                listSection.classList.remove(
-                'lg:col-span-8'
-                );
-
-                listSection.classList.add(
-                    'lg:col-span-8'
-                );
-        return;}
+                listSection.classList.remove('lg:col-span-8');
+                listSection.classList.add('lg:col-span-12');
+                return;
+            }
             if(adminMode){
                 sidebar.style.display = '';
-                listSection.classList.remove(
-                'lg:col-span-12'
-                );
-                listSection.classList.add(
-                'lg:col-span-8'
-                );
-
-        } else {
-
+                listSection.classList.remove('lg:col-span-12');
+                listSection.classList.add('lg:col-span-8');
+            } else {
                 sidebar.style.display = 'none';
-
-                listSection.classList.remove(
-                'lg:col-span-8'
-                );
-
-                listSection.classList.add(
-                'lg:col-span-12'
-                );
-
+                listSection.classList.remove('lg:col-span-8');
+                listSection.classList.add('lg:col-span-12');
             }
-
         }
 
         function setActiveTab(tab) {
@@ -601,14 +511,15 @@
             const filterBar = document.getElementById('filter-bar');
             const suggestForm = document.getElementById('suggestion-form-container');
             
-           if (tab === 'suggestions') {
-            filterBar.classList.add('hidden');
-            suggestForm.classList.remove('hidden');
-            suggestForm.style.display = 'block';
-        } else {
-            filterBar.classList.remove('hidden');
-            suggestForm.classList.add('hidden');
-            suggestForm.style.display = 'none';}
+            if (tab === 'suggestions') {
+                filterBar.classList.add('hidden');
+                suggestForm.classList.remove('hidden');
+                suggestForm.style.display = 'block';
+            } else {
+                filterBar.classList.remove('hidden');
+                suggestForm.classList.add('hidden');
+                suggestForm.style.display = 'none';
+            }
             
             updateLayout();
             renderReviews();
@@ -618,16 +529,11 @@
             const container = document.getElementById('reviewsList');
             const adminMode = document.body.classList.contains('is-admin');
             container.innerHTML = "";
-           if(activeTab === 'suggestions'){
-            container.className = "grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 max-w-5xl mx-auto";
+            if(activeTab === 'suggestions'){
+                container.className = "grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 max-w-5xl mx-auto";
             } else {
-            container.className = "grid gap-8 " +
-            (
-            adminMode && activeTab !== 'suggestions'
-            ? "grid-cols-1 md:grid-cols-2"
-            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            );
-        };
+                container.className = "grid gap-8 " + (adminMode && activeTab !== 'suggestions' ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3");
+            }
 
             if (activeTab === 'suggestions') {
                 if (suggestions.length === 0) {
@@ -764,7 +670,6 @@
                 }
             };
 
-            
             if (idInput) reviews = reviews.map(r => r.id === data.id ? data : r);
             else reviews.unshift(data);
             
@@ -775,6 +680,7 @@
 
         function saveAndRender() {
             localStorage.setItem('myReviews_manga', JSON.stringify(reviews));
+            localStorage.setItem('manga_suggestions', JSON.stringify(suggestions));
             localStorage.setItem('customGenres_manga', JSON.stringify(customGenres));
             renderReviews();
             populateGenreFilter();
@@ -787,7 +693,7 @@
             renderGenreCloud();
             document.getElementById('form-container').classList.remove('editing-mode');
             document.querySelectorAll('.rating-slider').forEach(slider => {slider.value = 5;});
-            initializeSliders()
+            initializeSliders();
             setFormCategory('personal');
         }
 
@@ -818,7 +724,7 @@
             renderGenreCloud();
             document.getElementById('form-container').classList.add('editing-mode');
             scrollToForm();
-            initializeSliders()
+            initializeSliders();
         }
 
         function openModal(id) {
@@ -827,13 +733,17 @@
             document.getElementById('modal-img').src = r.imageUrl;
             document.getElementById('modal-title').textContent = r.title;
             document.getElementById('modal-author').innerHTML =`${r.author}<br><span class="text-sm text-gray-600">${r.demography} •${r.year}</span>`;
-            document.getElementById('modal-genres').innerHTML =(r.genres || []).map(g => `<span class=" text-[10px] font-black border-2 border-black px-3 py-1 uppercase bg-white"> ${g}</span>`).join('');
+            document.getElementById('modal-genres').innerHTML =(r.genres || []).map(g => `<span class="text-[10px] font-black border-2 border-black px-3 py-1 uppercase bg-white"> ${g}</span>`).join('');
             document.getElementById('modal-comment').textContent = r.comment || "Sin comentarios.";
             document.getElementById('modal-cat').textContent = r.category === 'club' ? 'Club de Lectura' : 'Personal';
             const metrics = r.metrics || {};
-            const versionBadge =document.getElementById('modal-version-badge');if (r.category === 'club'&&r.clubVersion) {versionBadge.textContent =`Edición ${r.clubVersion}`;
-            versionBadge.classList.remove('hidden');} 
-            else {versionBadge.classList.add('hidden');}
+            const versionBadge = document.getElementById('modal-version-badge');
+            if (r.category === 'club' && r.clubVersion) {
+                versionBadge.textContent = `Edición ${r.clubVersion}`;
+                versionBadge.classList.remove('hidden');
+            } else {
+                versionBadge.classList.add('hidden');
+            }
             document.getElementById('modal-metrics').innerHTML = `<div class="text-center"><div class="font-black text-xl">${metrics.initial ?? '-'}</div>
             <div class="text-[9px] uppercase">Expectativas</div></div>
             <div class="text-center"><div class="font-black text-xl">${metrics.story ?? '-'}</div><div class="text-[9px] uppercase">Historia</div></div>
@@ -862,17 +772,18 @@
         }
 
         function addCustomGenre() {
-            const input =
-            document.getElementById('custom-genre');
-            const val =
-            input.value.trim();
+            const input = document.getElementById('custom-genre');
+            const val = input.value.trim();
             if (!val) return;
-                if (!customGenres.includes(val)) {
-                    customGenres.push(val);}
-                if (!selectedGenres.includes(val)) {selectedGenres.push(val);}
+            if (!customGenres.includes(val)) {
+                customGenres.push(val);
+            }
+            if (!selectedGenres.includes(val)) {
+                selectedGenres.push(val);
+            }
             input.value = '';
             renderGenreCloud();
-            }
+        }
 
         function deleteReview(e, id) {
             e.stopPropagation();
@@ -880,32 +791,89 @@
         }
 
         function populateGenreFilter() {
-        const select =
-        document.getElementById(
-            'filter-genre'
-        );
-        select.innerHTML =
-        '<option value="all">GÉNEROS</option>';
-        [...new Set(
-        reviews.flatMap(
-            r => r.genres || []
-        )
-        )]
-        .sort()
-        .forEach(g => {
-        select.innerHTML +=
-        `<option value="${g}">
-            ${g}
-        </option>`;
+            const select = document.getElementById('filter-genre');
+            select.innerHTML = '<option value="all">GÉNEROS</option>';
+            [...new Set(reviews.flatMap(r => r.genres || []))]
+                .sort()
+                .forEach(g => {
+                    select.innerHTML += `<option value="${g}">${g}</option>`;
+                });
+        }
 
-    });
-    }
+        // ---------- INICIALIZACIÓN ----------
+        // 1. Verificar sesión admin
+        checkAdminSession();
+        // 2. Renderizar elementos básicos
+        renderGenreCloud();
+        initializeSliders();
+        populateGenreFilter();
+        renderReviews();
+        // 3. Cargar datos remotos (sobrescribe localStorage si tiene éxito)
+        loadRemoteData();
 
-    checkAdminSession();
-    renderGenreCloud();
-    initializeSliders();
-    populateGenreFilter();
-    renderReviews();
+        // Función exportData e importData (se mantienen igual)
+        function exportData() {
+            const data = {
+                reviews: JSON.parse(localStorage.getItem('myReviews_manga')) || [],
+                suggestions: JSON.parse(localStorage.getItem('manga_suggestions')) || [],
+                customGenres: JSON.parse(localStorage.getItem('customGenres_manga')) || []
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `manga_archive_backup_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast("ARCHIVO EXPORTADO");
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    reviews = data.reviews || [];
+                    suggestions = data.suggestions || [];
+                    customGenres = data.customGenres || [];
+                    localStorage.setItem('myReviews_manga', JSON.stringify(reviews));
+                    localStorage.setItem('manga_suggestions', JSON.stringify(suggestions));
+                    localStorage.setItem('customGenres_manga', JSON.stringify(customGenres));
+                    renderGenreCloud();
+                    renderReviews();
+                    populateGenreFilter();
+                    showToast("DATOS IMPORTADOS");
+                } catch(err) {
+                    console.error(err);
+                    alert(err.name + "\n\n" + err.message);
+                    showToast("JSON INVÁLIDO");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Exponer funciones globalmente para los onclick de HTML
+        window.syncFromRemote = syncFromRemote;
+        window.exportData = exportData;
+        window.importData = importData;
+        window.toggleAdminMode = toggleAdminMode;
+        window.setActiveTab = setActiveTab;
+        window.setFormCategory = setFormCategory;
+        window.submitSuggestion = submitSuggestion;
+        window.deleteSuggestion = deleteSuggestion;
+        window.startEdit = startEdit;
+        window.deleteReview = deleteReview;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.cancelEdit = cancelEdit;
+        window.scrollToForm = scrollToForm;
+        window.addCustomGenre = addCustomGenre;
+        window.toggleGenre = toggleGenre;
+        window.toggleVillainRating = toggleVillainRating;
+        window.renderReviews = renderReviews;
+        window.syncFromRemote = syncFromRemote; // para el botón
     </script>
 </body>
 </html>
