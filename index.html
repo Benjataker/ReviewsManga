@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Manga Archive - Edición Admin & Sugerencias</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet" />
     <style>
+        /* (todos los estilos existentes se mantienen igual) */
         :root {
             --manga-black: #1a1a1a;
             --manga-red: #e63946;
@@ -15,7 +16,6 @@
             --manga-border: 3px solid #1a1a1a;
             --manga-yellow: #fef08a;
         }
-
         body {
             background-color: #f0f0f0;
             background-image: radial-gradient(var(--manga-black) 0.5px, transparent 0.5px);
@@ -24,26 +24,22 @@
             font-family: 'Noto Sans JP', sans-serif;
             color: var(--manga-black);
         }
-
         .manga-panel {
             background: var(--manga-paper);
             border: var(--manga-border);
             box-shadow: 8px 8px 0px 0px var(--manga-black);
             transition: all 0.2s ease;
         }
-
         .manga-header {
             background: var(--manga-black);
             color: white;
             clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);
         }
-
         .manga-title {
             font-family: 'Bangers', cursive;
             letter-spacing: 2px;
             text-transform: uppercase;
         }
-
         .rating-slider {
             -webkit-appearance: none;
             appearance: none;
@@ -53,7 +49,6 @@
             border: 2px solid var(--manga-black);
             outline: none;
         }
-
         .rating-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
@@ -64,11 +59,9 @@
             border: 2px solid black;
             cursor: pointer;
         }
-
         .rating-slider:hover {
-            background:#fca5a5;
+            background: #fca5a5;
         }
-
         .genre-tag {
             cursor: pointer;
             border: 2px solid var(--manga-black);
@@ -77,14 +70,12 @@
             background: white;
             padding: 2px 8px;
         }
-
         .genre-tag.active {
             background: var(--manga-black);
             color: white;
             transform: translate(-2px, -2px);
             box-shadow: 2px 2px 0px var(--manga-red);
         }
-
         .btn-manga {
             border: var(--manga-border);
             background: white;
@@ -93,23 +84,19 @@
             box-shadow: 4px 4px 0px var(--manga-black);
             transition: 0.1s;
         }
-
         .btn-manga:active {
             box-shadow: 0px 0px 0px var(--manga-black);
             transform: translate(4px, 4px);
         }
-
         .btn-manga-red {
             background: var(--manga-red);
             color: white;
         }
-
         .editing-mode {
             background-color: #fff5f5 !important;
             border-color: var(--manga-red) !important;
             box-shadow: 8px 8px 0px 0px var(--manga-red) !important;
         }
-
         .tab-btn {
             font-weight: 900;
             border: var(--manga-border);
@@ -117,11 +104,9 @@
             margin: 0 4px;
             transition: 0.2s;
         }
-
         .tab-active { background: var(--manga-black); color: white; }
         .tab-club-active { background: var(--manga-red); color: white; }
         .tab-suggest-active { background: #ca8a04; color: white; }
-
         .data-action-icon {
             opacity: 0.5;
             color: white;
@@ -131,17 +116,14 @@
             opacity: 1;
             transform: scale(1.2);
         }
-
         #detail-modal.active {
             display: flex;
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-
         @keyframes popIn {
             from { transform: scale(0.8); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
-
         .switch {
             position: relative;
             display: inline-block;
@@ -154,15 +136,12 @@
             background-color: #ccc; transition: .4s; border: 2px solid #000;
         }
         input:checked + .slider { background-color: var(--manga-red); }
-
         .admin-only { display: none !important; }
         body.is-admin .admin-only { display: block !important; }
         body.is-admin .admin-only-flex { display: flex !important; }
-
         #reviewsList.admin-grid {
             grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
         }
-
         .suggest-card {
             background: var(--manga-yellow);
             border: 3px solid #000;
@@ -182,14 +161,13 @@
                 </h1>
                 <p class="text-gray-400 text-xs mt-2 font-bold tracking-widest uppercase">Reseñas de Benjataker con pequeña ayuda de la IA</p>
             </div>
-            
             <div class="flex items-center gap-4">
                 <div class="flex gap-3 pr-4 border-r border-gray-700 admin-only-flex">
-                    <!-- Botón Sincronizar (nuevo) -->
-                    <button onclick="syncFromRemote()" class="data-action-icon" title="Sincronizar con repositorio">
+                    <!-- Sincronizar desde GitHub -->
+                    <button onclick="syncFromGitHub()" class="data-action-icon" title="Sincronizar con GitHub">
                         <i class="fas fa-sync-alt"></i>
                     </button>
-                    <input type="file" id="importFile" class="hidden" accept=".json" onchange="importData(event)">
+                    <input type="file" id="importFile" class="hidden" accept=".json" onchange="importData(event)" />
                     <button onclick="document.getElementById('importFile').click()" class="data-action-icon" title="Importar">
                         <i class="fas fa-file-import"></i>
                     </button>
@@ -210,98 +188,88 @@
     </header>
 
     <main class="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-12 gap-10">
-        
-        <!-- Formulario de Admin -->
+        <!-- Admin Sidebar -->
         <section id="admin-sidebar" class="lg:col-span-4 admin-only">
             <div id="form-container" class="manga-panel p-6 sticky top-4 max-h-[95vh] overflow-y-auto">
                 <h2 id="form-title" class="text-xl font-black mb-6 flex items-center gap-2 border-b-4 border-black pb-2 italic text-red-600">
                     <i class="fas fa-edit"></i> REGISTRO DE PODER
                 </h2>
-                
                 <form id="reviewForm" class="space-y-4">
-                    <input type="hidden" id="edit-id">
-                    
+                    <input type="hidden" id="edit-id" />
                     <div class="flex gap-2 mb-4">
                         <button type="button" onclick="setFormCategory('personal')" id="btn-cat-personal" class="flex-1 py-2 text-[10px] font-black border-2 border-black bg-black text-white uppercase">Personal</button>
                         <button type="button" onclick="setFormCategory('club')" id="btn-cat-club" class="flex-1 py-2 text-[10px] font-black border-2 border-black text-gray-400 uppercase bg-white">Club</button>
-                        <input type="hidden" id="category" value="personal">
+                        <input type="hidden" id="category" value="personal" />
                     </div>
-
                     <div id="club-version-container" class="hidden bg-red-50 p-3 border-2 border-black mb-3">
                         <label class="block text-[10px] font-black uppercase mb-1">Edición del Club</label>
-                        <input type="text" id="club-version" placeholder="Ej: 03-2024" class="w-full px-3 py-1.5 text-sm border-2 border-black outline-none">
+                        <input type="text" id="club-version" placeholder="Ej: 03-2024" class="w-full px-3 py-1.5 text-sm border-2 border-black outline-none" />
                     </div>
-
                     <div class="space-y-3">
-                        <input type="text" id="title" required placeholder="TÍTULO DEL MANGA" class="w-full px-3 py-2 text-sm border-2 border-black font-bold outline-none focus:bg-yellow-50">
-                        <input type="text" id="author" required placeholder="AUTOR / ARTISTA" class="w-full px-3 py-2 text-sm border-2 border-black font-bold outline-none focus:bg-yellow-50">
+                        <input type="text" id="title" required placeholder="TÍTULO DEL MANGA" class="w-full px-3 py-2 text-sm border-2 border-black font-bold outline-none focus:bg-yellow-50" />
+                        <input type="text" id="author" required placeholder="AUTOR / ARTISTA" class="w-full px-3 py-2 text-sm border-2 border-black font-bold outline-none focus:bg-yellow-50" />
                     </div>
-
                     <div class="grid grid-cols-2 gap-3">
                         <select id="demography" class="w-full px-2 py-2 text-sm border-2 border-black font-bold outline-none">
                             <option>SHONEN</option><option>SEINEN</option><option>SHOJO</option><option>JOSEI</option><option>KODOMO</option>
                         </select>
-                        <input type="number" id="year" placeholder="AÑO" class="w-full px-2 py-2 text-sm border-2 border-black outline-none">
+                        <input type="number" id="year" placeholder="AÑO" class="w-full px-2 py-2 text-sm border-2 border-black outline-none" />
                     </div>
-
                     <div>
                         <div id="genre-container" class="flex flex-wrap gap-2 mb-3 max-h-32 overflow-y-auto p-2 border-2 border-black bg-white"></div>
                         <div class="flex gap-2">
-                            <input type="text" id="custom-genre" placeholder="Otro género..." class="flex-1 px-2 py-1 text-xs border-2 border-black outline-none">
+                            <input type="text" id="custom-genre" placeholder="Otro género..." class="flex-1 px-2 py-1 text-xs border-2 border-black outline-none" />
                             <button type="button" onclick="addCustomGenre()" class="btn-manga px-3 py-1 text-[10px]">+ ADD</button>
                         </div>
                     </div>
-
-                   <div class="space-y-3 border-t-2 border-black pt-4">
+                    <div class="space-y-3 border-t-2 border-black pt-4">
                         <h3 class="font-black text-xs uppercase tracking-tighter">Métricas de Poder (1-10)</h3>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="rating-item">
                                 <div class="flex justify-between text-[9px] font-black uppercase"><span>Expectativas</span><span class="val-display">5</span></div>
-                                <input type="range" id="val_initial" min="1" max="10" step="0.5" value="5" class="rating-slider">
+                                <input type="range" id="val_initial" min="1" max="10" step="0.5" value="5" class="rating-slider" />
                             </div>
                             <div class="rating-item">
                                 <div class="flex justify-between text-[9px] font-black uppercase"><span>Historia</span><span class="val-display">5</span></div>
-                                <input type="range" id="val_story" min="1" max="10" step="0.5" value="5" class="rating-slider">
+                                <input type="range" id="val_story" min="1" max="10" step="0.5" value="5" class="rating-slider" />
                             </div>
                             <div class="rating-item">
                                 <div class="flex justify-between text-[9px] font-black uppercase"><span>Mundo</span><span class="val-display">5</span></div>
-                                <input type="range" id="val_world" min="1" max="10" step="0.5" value="5" class="rating-slider">
+                                <input type="range" id="val_world" min="1" max="10" step="0.5" value="5" class="rating-slider" />
                             </div>
                             <div class="rating-item">
                                 <div class="flex justify-between text-[9px] font-black uppercase"><span>Ritmo</span><span class="val-display">5</span></div>
-                                <input type="range" id="val_pacing" min="1" max="10" step="0.5" value="5" class="rating-slider">
+                                <input type="range" id="val_pacing" min="1" max="10" step="0.5" value="5" class="rating-slider" />
                             </div>
                             <div class="rating-item">
                                 <div class="flex justify-between text-[9px] font-black uppercase"><span>Personajes</span><span class="val-display">5</span></div>
-                                <input type="range" id="val_chars" min="1" max="10" step="0.5" value="5" class="rating-slider">
+                                <input type="range" id="val_chars" min="1" max="10" step="0.5" value="5" class="rating-slider" />
                             </div>
                             <div class="rating-item">
                                 <div class="flex justify-between text-[9px] font-black uppercase"><span>Protagonista</span><span class="val-display">5</span></div>
-                                <input type="range" id="val_protagonist" min="1" max="10" step="0.5" value="5" class="rating-slider">
+                                <input type="range" id="val_protagonist" min="1" max="10" step="0.5" value="5" class="rating-slider" />
                             </div>
                             <div class="rating-item col-span-2">
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-[9px] font-black uppercase">Antagonista</span>
                                     <label class="switch">
-                                        <input type="checkbox" id="has_villain" checked onchange="toggleVillainRating(document.getElementById('has_villain').checked)">
+                                        <input type="checkbox" id="has_villain" checked onchange="toggleVillainRating(document.getElementById('has_villain').checked)" />
                                         <span class="slider"></span>
                                     </label>
                                 </div>
                                 <div id="villain_slider_container">
                                     <div class="flex justify-between text-[9px] font-black uppercase mb-1"><span>Poder Antagónico</span><span class="val-display" id="val-display-villain">5</span></div>
-                                    <input type="range" id="val_villain" min="1" max="10" step="0.5" value="5" class="rating-slider">
+                                    <input type="range" id="val_villain" min="1" max="10" step="0.5" value="5" class="rating-slider" />
                                 </div>
                             </div>
                             <div class="rating-item col-span-2 border-t border-black pt-2">
                                 <div class="flex justify-between text-xs font-black uppercase text-red-600"><span>Nota Final</span><span class="val-display">5</span></div>
-                                <input type="range" id="val_final" min="1" max="10" step="0.5" value="5" class="rating-slider" style="background: #fee2e2;">
+                                <input type="range" id="val_final" min="1" max="10" step="0.5" value="5" class="rating-slider" style="background: #fee2e2;" />
                             </div>
                         </div>
                     </div>
-        
-                        <textarea id="comment" rows="3" class="w-full mt-1 px-3 py-2 text-sm border-2 border-black outline-none focus:bg-yellow-50" placeholder="Escribe tu veredicto..."></textarea>              
-                    <input type="text" id="imageUrl" class="w-full px-3 py-1.5 text-xs border-2 border-black outline-none" placeholder="Link Portada">
-
+                    <textarea id="comment" rows="3" class="w-full mt-1 px-3 py-2 text-sm border-2 border-black outline-none focus:bg-yellow-50" placeholder="Escribe tu veredicto..."></textarea>
+                    <input type="text" id="imageUrl" class="w-full px-3 py-1.5 text-xs border-2 border-black outline-none" placeholder="Link Portada" />
                     <div class="flex gap-2 pt-4">
                         <button type="submit" id="submit-btn" class="flex-1 btn-manga btn-manga-red py-3">SUBIR CAPÍTULO</button>
                         <button type="button" id="cancel-edit-btn" onclick="cancelEdit()" class="hidden btn-manga px-4 py-3"><i class="fas fa-times"></i></button>
@@ -313,67 +281,55 @@
         <!-- Listado Principal -->
         <section id="list-section" class="lg:col-span-8">
             <div class="flex flex-col gap-8">
-                <!-- Navegación de Pestañas -->
                 <div class="flex gap-2 overflow-x-auto pb-2">
                     <button onclick="setActiveTab('personal')" id="tab-personal" class="flex-1 min-w-[140px] py-3 tab-btn tab-active uppercase text-xs">Biblioteca Personal</button>
                     <button onclick="setActiveTab('club')" id="tab-club" class="flex-1 min-w-[140px] py-3 tab-btn uppercase text-xs text-gray-400">Club de Lectura</button>
                     <button onclick="setActiveTab('suggestions')" id="tab-suggestions" class="flex-1 min-w-[140px] py-3 tab-btn uppercase text-xs text-gray-400">Muro de Sugerencias</button>
                 </div>
-
-                <!-- Filtros y Buscador (Ocultos en sugerencias) -->
                 <div id="filter-bar" class="manga-panel p-4 flex flex-wrap gap-4 items-center">
                     <div class="flex-1 min-w-[200px] relative">
                         <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2"></i>
-                        <input type="text" id="search-input" oninput="renderReviews()" placeholder="BUSCAR TÍTULO O AUTOR..." class="w-full pl-10 pr-4 py-2 border-2 border-black font-bold text-sm outline-none">
+                        <input type="text" id="search-input" oninput="renderReviews()" placeholder="BUSCAR TÍTULO O AUTOR..." class="w-full pl-10 pr-4 py-2 border-2 border-black font-bold text-sm outline-none" />
                     </div>
                     <select id="filter-genre" onchange="renderReviews()" class="border-2 border-black px-4 py-2 text-sm font-black bg-white outline-none">
                         <option value="all">GÉNEROS</option>
                     </select>
                 </div>
-
-                <!-- Contenido de Sugerencias (Formulario de envío) -->
                 <div id="suggestion-form-container" class="hidden mb-4">
                     <div class="manga-panel p-4 bg-yellow-50 border-dashed max-w-3xl mx-auto">
                         <h3 class="text-xl font-black mb-4 uppercase italic"><i class="fas fa-paper-plane mr-2"></i>¿Qué debería leer después?</h3>
                         <div class="flex flex-col md:flex-row gap-3">
-                            <input type="text" id="suggest-title" placeholder="Título del Manga" class="px-4 py-2 border-2 border-black font-bold outline-none">
-                            <input type="text" id="suggest-author" placeholder="Autor" class="px-4 py-2 border-2 border-black font-bold outline-none">
+                            <input type="text" id="suggest-title" placeholder="Título del Manga" class="px-4 py-2 border-2 border-black font-bold outline-none" />
+                            <input type="text" id="suggest-author" placeholder="Autor" class="px-4 py-2 border-2 border-black font-bold outline-none" />
                             <button onclick="submitSuggestion()" class="btn-manga bg-yellow-400 px-6 py-1.5">ENVIAR SUGERENCIA</button>
                         </div>
                     </div>
                 </div>
-
                 <div id="reviewsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
             </div>
         </section>
     </main>
 
     <!-- Modal Detalle -->
-	<div id="detail-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm items-center justify-center p-4 z-[200] hidden">
+    <div id="detail-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm items-center justify-center p-4 z-[200] hidden">
         <div class="manga-panel bg-white w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row relative">
             <button onclick="closeModal()" class="absolute top-4 right-4 z-10 btn-manga w-10 h-10 flex items-center justify-center"><i class="fas fa-times"></i></button>
-            
             <div class="md:w-2/5 h-64 md:h-auto border-b-4 md:border-b-0 md:border-r-4 border-black">
-                <img id="modal-img" class="w-full h-full object-cover">
+                <img id="modal-img" class="w-full h-full object-cover" />
             </div>
-
             <div class="md:w-3/5 p-8 overflow-y-auto">
                 <div class="flex gap-2 items-center mb-4">
                     <span id="modal-cat" class="text-[10px] font-black border-2 border-black px-3 py-1 uppercase"></span>
                     <span id="modal-version-badge" class="text-[10px] font-black bg-gradient-to-r from-red-600 to-red-800 text-white border-2 border-black px-3 py-1 uppercase hidden shadow-md"></span>
                 </div>
-                
                 <h2 id="modal-title" class="text-4xl font-black uppercase italic mb-1 tracking-tighter leading-none"></h2>
                 <p id="modal-author" class="text-xl font-bold text-red-600 mb-6"></p>
                 <div id="modal-genres" class="flex flex-wrap gap-2 mb-6"></div>
-                
-                <div id="modal-metrics"class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8 bg-gray-100 p-4 border-2 border-black"></div>
-                
+                <div id="modal-metrics" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8 bg-gray-100 p-4 border-2 border-black"></div>
                 <div class="relative bg-white p-6 border-2 border-black mb-6">
                     <div class="absolute -top-3 left-4 bg-black text-white text-[10px] px-2 font-black">COMENTARIOS</div>
                     <p id="modal-comment" class="text-sm font-medium leading-relaxed italic"></p>
                 </div>
-
                 <button onclick="closeModal()" class="w-full btn-manga py-3 text-sm">VOLVER AL ARCHIVO</button>
             </div>
         </div>
@@ -382,78 +338,199 @@
     <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-black text-white border-2 border-white px-8 py-4 font-black uppercase text-xs z-[1000] opacity-0 transition-all pointer-events-none"></div>
 
     <script>
-        const ADMIN_PASSWORD = "otaku123"; 
-        
+        // ---------- CONFIGURACIÓN DE GITHUB ----------
+        const GITHUB_TOKEN = 'TU_TOKEN_AQUI';  // Reemplázalo con tu token personal
+        const REPO_OWNER = 'TU_USUARIO';        // Tu nombre de usuario
+        const REPO_NAME = 'NOMBRE_REPO';        // Nombre del repositorio
+        const FILE_PATH = 'archivos json/datos.json';
+        const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+
+        // ---------- VARIABLES GLOBALES ----------
+        const ADMIN_PASSWORD = "otaku123";
+
         let reviews = JSON.parse(localStorage.getItem('myReviews_manga')) || [];
         let suggestions = JSON.parse(localStorage.getItem('manga_suggestions')) || [];
         let customGenres = JSON.parse(localStorage.getItem('customGenres_manga')) || [];
         let selectedGenres = [];
         let activeTab = 'personal';
-
         const baseGenres = ["Nekketsu", "Mecha", "Isekai", "Spokon", "Cyberpunk", "Horror", "Fantasía", "Romance", "Acción", "Drama", "Manga", "Manwha", "Donhua"];
 
-        // ---------- FUNCIÓN PARA CARGAR DATOS DESDE EL REPOSITORIO ----------
-        async function loadRemoteData() {
+        // ---------- FUNCIONES DE GITHUB API ----------
+        async function getRemoteFile() {
             try {
-                const response = await fetch('./archivos json/datos.json');
+                const response = await fetch(API_URL, {
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    if (response.status === 404) {
+                        // Archivo no existe aún
+                        return null;
+                    }
+                    throw new Error(`Error ${response.status}`);
                 }
                 const data = await response.json();
-                // Validar estructura básica
-                if (data.reviews && Array.isArray(data.reviews)) {
-                    reviews = data.reviews;
-                }
-                if (data.suggestions && Array.isArray(data.suggestions)) {
-                    suggestions = data.suggestions;
-                }
-                if (data.customGenres && Array.isArray(data.customGenres)) {
-                    customGenres = data.customGenres;
-                }
-                // Guardar en localStorage para uso offline
-                localStorage.setItem('myReviews_manga', JSON.stringify(reviews));
-                localStorage.setItem('manga_suggestions', JSON.stringify(suggestions));
-                localStorage.setItem('customGenres_manga', JSON.stringify(customGenres));
-                showToast('DATOS CARGADOS DESDE EL REPOSITORIO');
-                // Refrescar toda la UI
-                renderGenreCloud();
-                renderReviews();
-                populateGenreFilter();
+                const content = atob(data.content);
+                return {
+                    content: JSON.parse(content),
+                    sha: data.sha
+                };
             } catch (error) {
-                console.warn('No se pudo cargar el archivo remoto. Usando datos locales (si existen).', error);
-                // No mostramos toast para no molestar, pero sí en consola
+                console.error('Error al leer archivo remoto:', error);
+                return null;
             }
         }
 
-        // Función para sincronizar manualmente (botón)
-        async function syncFromRemote() {
-            await loadRemoteData();
+        async function updateRemoteFile(newContent, sha) {
+            const payload = {
+                message: 'Actualización automática desde la web',
+                content: btoa(JSON.stringify(newContent, null, 2)),
+                sha: sha
+            };
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error(`Error ${response.status}`);
+                showToast('✅ Datos guardados en GitHub');
+                return true;
+            } catch (error) {
+                console.error('Error al actualizar archivo:', error);
+                showToast('❌ Error al guardar en GitHub');
+                return false;
+            }
+        }
+
+        async function createRemoteFile(content) {
+            const payload = {
+                message: 'Creación inicial del archivo de datos',
+                content: btoa(JSON.stringify(content, null, 2))
+            };
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error(`Error ${response.status}`);
+                showToast('✅ Archivo creado en GitHub');
+                return true;
+            } catch (error) {
+                console.error('Error al crear archivo:', error);
+                showToast('❌ Error al crear archivo');
+                return false;
+            }
+        }
+
+        // ---------- Sincronizar desde GitHub (carga y reemplaza datos locales) ----------
+        async function syncFromGitHub() {
+            const remote = await getRemoteFile();
+            if (remote) {
+                const data = remote.content;
+                if (data.reviews) reviews = data.reviews;
+                if (data.suggestions) suggestions = data.suggestions;
+                if (data.customGenres) customGenres = data.customGenres;
+                // Guardar en localStorage
+                localStorage.setItem('myReviews_manga', JSON.stringify(reviews));
+                localStorage.setItem('manga_suggestions', JSON.stringify(suggestions));
+                localStorage.setItem('customGenres_manga', JSON.stringify(customGenres));
+                showToast('📥 Datos sincronizados desde GitHub');
+                renderGenreCloud();
+                renderReviews();
+                populateGenreFilter();
+            } else {
+                showToast('⚠️ No se encontró archivo en GitHub');
+            }
+        }
+
+        // ---------- GUARDAR EN LOCAL Y LUEGO EN GITHUB ----------
+        async function saveAndRender() {
+            // Guardar en localStorage
+            localStorage.setItem('myReviews_manga', JSON.stringify(reviews));
+            localStorage.setItem('manga_suggestions', JSON.stringify(suggestions));
+            localStorage.setItem('customGenres_manga', JSON.stringify(customGenres));
+            renderReviews();
+            populateGenreFilter();
+
+            // Subir a GitHub
+            const remote = await getRemoteFile();
+            if (remote) {
+                const data = { reviews, suggestions, customGenres };
+                await updateRemoteFile(data, remote.sha);
+            } else {
+                // Si no existe, crearlo
+                const data = { reviews, suggestions, customGenres };
+                await createRemoteFile(data);
+            }
+        }
+
+        // ---------- CARGA INICIAL (localStorage + GitHub) ----------
+        async function loadInitialData() {
+            // Primero cargar desde localStorage (si existe)
+            const localReviews = localStorage.getItem('myReviews_manga');
+            const localSuggestions = localStorage.getItem('manga_suggestions');
+            const localGenres = localStorage.getItem('customGenres_manga');
+            if (localReviews) reviews = JSON.parse(localReviews);
+            if (localSuggestions) suggestions = JSON.parse(localSuggestions);
+            if (localGenres) customGenres = JSON.parse(localGenres);
+
+            // Luego intentar obtener remoto y sobrescribir si hay cambios
+            const remote = await getRemoteFile();
+            if (remote) {
+                const data = remote.content;
+                if (data.reviews) reviews = data.reviews;
+                if (data.suggestions) suggestions = data.suggestions;
+                if (data.customGenres) customGenres = data.customGenres;
+                // Guardar en localStorage
+                localStorage.setItem('myReviews_manga', JSON.stringify(reviews));
+                localStorage.setItem('manga_suggestions', JSON.stringify(suggestions));
+                localStorage.setItem('customGenres_manga', JSON.stringify(customGenres));
+                showToast('📥 Datos cargados desde GitHub');
+            } else {
+                // Si no existe remoto, y no hay datos locales, creamos arrays vacíos
+                if (!localReviews && !localSuggestions && !localGenres) {
+                    // No hacemos nada, ya están vacíos
+                }
+            }
+            // Refrescar UI
+            renderGenreCloud();
+            renderReviews();
+            populateGenreFilter();
         }
 
         // ---------- RESTO DE FUNCIONES (sin cambios relevantes) ----------
         function initializeSliders() {
-            document.querySelectorAll('.rating-item')
-                .forEach(item => {
+            document.querySelectorAll('.rating-item').forEach(item => {
                 const slider = item.querySelector('input[type="range"]');
                 const display = item.querySelector('.val-display');
-                if(!slider || !display) return;
+                if (!slider || !display) return;
                 display.textContent = slider.value;
-                slider.oninput = function(){
+                slider.oninput = function() {
                     display.textContent = this.value;
                 };
             });
         }
 
         function toggleVillainRating(enabled) {
-            const container = document.getElementById('villain_slider_container');
-            container.style.display = enabled ? 'block' : 'none';
+            document.getElementById('villain_slider_container').style.display = enabled ? 'block' : 'none';
         }
 
         function toggleAdminMode() {
             if (document.body.classList.contains('is-admin')) {
                 if (confirm("¿Cerrar sesión de administrador?")) {
                     document.body.classList.remove('is-admin');
-                    localStorage.setItem('myReviews_manga_backup',localStorage.getItem('myReviews_manga') || '[]');
                     localStorage.setItem('manga_admin', 'false');
                     document.getElementById('admin-lock-btn').innerHTML = '<i class="fas fa-lock"></i>';
                     updateLayout();
@@ -484,14 +561,13 @@
             const sidebar = document.getElementById('admin-sidebar');
             const listSection = document.getElementById('list-section');
             const adminMode = document.body.classList.contains('is-admin');
-
-            if(activeTab === 'suggestions') {
+            if (activeTab === 'suggestions') {
                 sidebar.style.display = 'none';
                 listSection.classList.remove('lg:col-span-8');
                 listSection.classList.add('lg:col-span-12');
                 return;
             }
-            if(adminMode){
+            if (adminMode) {
                 sidebar.style.display = '';
                 listSection.classList.remove('lg:col-span-12');
                 listSection.classList.add('lg:col-span-8');
@@ -507,10 +583,8 @@
             document.getElementById('tab-personal').className = `flex-1 py-3 tab-btn uppercase text-xs ${tab === 'personal' ? 'tab-active' : 'text-gray-400'}`;
             document.getElementById('tab-club').className = `flex-1 py-3 tab-btn uppercase text-xs ${tab === 'club' ? 'tab-club-active' : 'text-gray-400'}`;
             document.getElementById('tab-suggestions').className = `flex-1 py-3 tab-btn uppercase text-xs ${tab === 'suggestions' ? 'tab-suggest-active' : 'text-gray-400'}`;
-            
             const filterBar = document.getElementById('filter-bar');
             const suggestForm = document.getElementById('suggestion-form-container');
-            
             if (tab === 'suggestions') {
                 filterBar.classList.add('hidden');
                 suggestForm.classList.remove('hidden');
@@ -520,7 +594,6 @@
                 suggestForm.classList.add('hidden');
                 suggestForm.style.display = 'none';
             }
-            
             updateLayout();
             renderReviews();
         }
@@ -529,7 +602,7 @@
             const container = document.getElementById('reviewsList');
             const adminMode = document.body.classList.contains('is-admin');
             container.innerHTML = "";
-            if(activeTab === 'suggestions'){
+            if (activeTab === 'suggestions') {
                 container.className = "grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 max-w-5xl mx-auto";
             } else {
                 container.className = "grid gap-8 " + (adminMode && activeTab !== 'suggestions' ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3");
@@ -572,7 +645,7 @@
                     <div class="manga-panel flex bg-white group overflow-hidden h-48 relative">
                         <div onclick="openModal(${r.id})" class="flex flex-1 cursor-pointer">
                             <div class="w-32 flex-shrink-0 bg-gray-200 border-r-4 border-black relative overflow-hidden">
-                                <img src="${r.imageUrl}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://via.placeholder.com/150x200?text=NO+IMAGE'">
+                                <img src="${r.imageUrl}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://via.placeholder.com/150x200?text=NO+IMAGE'" />
                             </div>
                             <div class="p-4 flex-1 flex flex-col justify-between">
                                 <div>
@@ -603,34 +676,28 @@
         function submitSuggestion() {
             const title = document.getElementById('suggest-title').value.trim();
             const author = document.getElementById('suggest-author').value.trim();
-            
             if (!title || !author) {
                 showToast("COMPLETA TÍTULO Y AUTOR");
                 return;
             }
-
             suggestions.unshift({ title, author, date: new Date().toISOString() });
-            localStorage.setItem('manga_suggestions', JSON.stringify(suggestions));
-            
             document.getElementById('suggest-title').value = '';
             document.getElementById('suggest-author').value = '';
-            
             showToast("¡GRACIAS POR LA SUGERENCIA!");
-            renderReviews();
+            saveAndRender(); // Guarda en localStorage y GitHub
         }
 
         function deleteSuggestion(index) {
-            if(confirm("¿ELIMINAR SUGERENCIA?")) {
+            if (confirm("¿ELIMINAR SUGERENCIA?")) {
                 suggestions.splice(index, 1);
-                localStorage.setItem('manga_suggestions', JSON.stringify(suggestions));
-                renderReviews();
+                saveAndRender();
             }
         }
 
         function setFormCategory(cat) {
             document.getElementById('category').value = cat;
             const clubContainer = document.getElementById('club-version-container');
-            if(cat === 'club') {
+            if (cat === 'club') {
                 clubContainer.classList.remove('hidden');
                 document.getElementById('btn-cat-club').className = "flex-1 py-2 text-[10px] font-black border-2 border-black bg-red-600 text-white uppercase";
                 document.getElementById('btn-cat-personal').className = "flex-1 py-2 text-[10px] font-black border-2 border-black text-gray-400 uppercase bg-white";
@@ -641,15 +708,14 @@
             }
         }
 
-        document.getElementById('reviewForm').addEventListener('submit', (e) => {
+        document.getElementById('reviewForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const idInput = document.getElementById('edit-id').value;
             const category = document.getElementById('category').value;
-            
             const data = {
                 id: idInput ? parseInt(idInput) : Date.now(),
                 category: category,
-                clubVersion:document.getElementById('club-version').value,
+                clubVersion: document.getElementById('club-version').value,
                 title: document.getElementById('title').value,
                 author: document.getElementById('author').value,
                 demography: document.getElementById('demography').value,
@@ -665,26 +731,16 @@
                     pacing: document.getElementById('val_pacing').value,
                     chars: document.getElementById('val_chars').value,
                     protagonist: document.getElementById('val_protagonist').value,
-                    villain:document.getElementById('has_villain').checked ? document.getElementById('val_villain').value: null,
+                    villain: document.getElementById('has_villain').checked ? document.getElementById('val_villain').value : null,
                     total: document.getElementById('val_final').value
                 }
             };
-
             if (idInput) reviews = reviews.map(r => r.id === data.id ? data : r);
             else reviews.unshift(data);
-            
             cancelEdit();
-            saveAndRender();
+            await saveAndRender(); // Guarda en localStorage y GitHub
             showToast("DATOS GUARDADOS");
         });
-
-        function saveAndRender() {
-            localStorage.setItem('myReviews_manga', JSON.stringify(reviews));
-            localStorage.setItem('manga_suggestions', JSON.stringify(suggestions));
-            localStorage.setItem('customGenres_manga', JSON.stringify(customGenres));
-            renderReviews();
-            populateGenreFilter();
-        }
 
         function cancelEdit() {
             document.getElementById('reviewForm').reset();
@@ -692,7 +748,7 @@
             selectedGenres = [];
             renderGenreCloud();
             document.getElementById('form-container').classList.remove('editing-mode');
-            document.querySelectorAll('.rating-slider').forEach(slider => {slider.value = 5;});
+            document.querySelectorAll('.rating-slider').forEach(slider => { slider.value = 5; });
             initializeSliders();
             setFormCategory('personal');
         }
@@ -716,8 +772,6 @@
             document.getElementById('val_chars').value = r.metrics.chars || 5;
             document.getElementById('val_protagonist').value = r.metrics.protagonist || 5;
             document.getElementById('val_final').value = r.metrics.total || 5;
-            document.getElementById('year').value = r.year || '';
-            document.getElementById('demography').value = r.demography || '';
             document.getElementById('club-version').value = r.clubVersion || '';
             setFormCategory(r.category);
             selectedGenres = [...r.genres];
@@ -732,8 +786,8 @@
             if (!r) return;
             document.getElementById('modal-img').src = r.imageUrl;
             document.getElementById('modal-title').textContent = r.title;
-            document.getElementById('modal-author').innerHTML =`${r.author}<br><span class="text-sm text-gray-600">${r.demography} •${r.year}</span>`;
-            document.getElementById('modal-genres').innerHTML =(r.genres || []).map(g => `<span class="text-[10px] font-black border-2 border-black px-3 py-1 uppercase bg-white"> ${g}</span>`).join('');
+            document.getElementById('modal-author').innerHTML = `${r.author}<br><span class="text-sm text-gray-600">${r.demography} • ${r.year}</span>`;
+            document.getElementById('modal-genres').innerHTML = (r.genres || []).map(g => `<span class="text-[10px] font-black border-2 border-black px-3 py-1 uppercase bg-white"> ${g}</span>`).join('');
             document.getElementById('modal-comment').textContent = r.comment || "Sin comentarios.";
             document.getElementById('modal-cat').textContent = r.category === 'club' ? 'Club de Lectura' : 'Personal';
             const metrics = r.metrics || {};
@@ -744,21 +798,23 @@
             } else {
                 versionBadge.classList.add('hidden');
             }
-            document.getElementById('modal-metrics').innerHTML = `<div class="text-center"><div class="font-black text-xl">${metrics.initial ?? '-'}</div>
-            <div class="text-[9px] uppercase">Expectativas</div></div>
-            <div class="text-center"><div class="font-black text-xl">${metrics.story ?? '-'}</div><div class="text-[9px] uppercase">Historia</div></div>
-            <div class="text-center"><div class="font-black text-xl">${metrics.world ?? '-'}</div><div class="text-[9px] uppercase">Mundo</div></div>
-            <div class="text-center"><div class="font-black text-xl">${metrics.pacing ?? '-'}</div><div class="text-[9px] uppercase">Ritmo</div></div>
-            <div class="text-center"><div class="font-black text-xl">${metrics.chars ?? '-'}</div><div class="text-[9px] uppercase">Personajes</div></div>
-            <div class="text-center"><div class="font-black text-xl">${metrics.protagonist ?? '-'}</div><div class="text-[9px] uppercase">Protagonista</div></div>
-            <div class="text-center"><div class="font-black text-xl">${metrics.villain ?? '-'}</div><div class="text-[9px] uppercase">Antagonista</div></div>
-            <div class="text-center"><div class="font-black text-2xl text-red-600">${metrics.total ?? '-'}</div><div class="text-[9px] uppercase">Final</div></div>`;
+            document.getElementById('modal-metrics').innerHTML = `
+                <div class="text-center"><div class="font-black text-xl">${metrics.initial ?? '-'}</div><div class="text-[9px] uppercase">Expectativas</div></div>
+                <div class="text-center"><div class="font-black text-xl">${metrics.story ?? '-'}</div><div class="text-[9px] uppercase">Historia</div></div>
+                <div class="text-center"><div class="font-black text-xl">${metrics.world ?? '-'}</div><div class="text-[9px] uppercase">Mundo</div></div>
+                <div class="text-center"><div class="font-black text-xl">${metrics.pacing ?? '-'}</div><div class="text-[9px] uppercase">Ritmo</div></div>
+                <div class="text-center"><div class="font-black text-xl">${metrics.chars ?? '-'}</div><div class="text-[9px] uppercase">Personajes</div></div>
+                <div class="text-center"><div class="font-black text-xl">${metrics.protagonist ?? '-'}</div><div class="text-[9px] uppercase">Protagonista</div></div>
+                <div class="text-center"><div class="font-black text-xl">${metrics.villain ?? '-'}</div><div class="text-[9px] uppercase">Antagonista</div></div>
+                <div class="text-center"><div class="font-black text-2xl text-red-600">${metrics.total ?? '-'}</div><div class="text-[9px] uppercase">Final</div></div>
+            `;
             document.getElementById('detail-modal').classList.add('active');
         }
 
         function closeModal() { document.getElementById('detail-modal').classList.remove('active'); }
-        function showToast(m) { const t = document.getElementById('toast'); t.textContent = m; t.style.opacity = '1'; setTimeout(() => t.style.opacity='0', 2000); }
+        function showToast(m) { const t = document.getElementById('toast'); t.textContent = m; t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 2000); }
         function scrollToForm() { document.getElementById('form-container').scrollIntoView({ behavior: 'smooth' }); }
+
         function renderGenreCloud() {
             const cloud = document.getElementById('genre-container');
             cloud.innerHTML = [...new Set([...baseGenres, ...customGenres])].map(g => `
@@ -775,54 +831,36 @@
             const input = document.getElementById('custom-genre');
             const val = input.value.trim();
             if (!val) return;
-            if (!customGenres.includes(val)) {
-                customGenres.push(val);
-            }
-            if (!selectedGenres.includes(val)) {
-                selectedGenres.push(val);
-            }
+            if (!customGenres.includes(val)) customGenres.push(val);
+            if (!selectedGenres.includes(val)) selectedGenres.push(val);
             input.value = '';
             renderGenreCloud();
         }
 
         function deleteReview(e, id) {
             e.stopPropagation();
-            if(confirm("¿ELIMINAR?")) { reviews = reviews.filter(r => r.id !== id); saveAndRender(); }
+            if (confirm("¿ELIMINAR?")) {
+                reviews = reviews.filter(r => r.id !== id);
+                saveAndRender();
+            }
         }
 
         function populateGenreFilter() {
             const select = document.getElementById('filter-genre');
             select.innerHTML = '<option value="all">GÉNEROS</option>';
-            [...new Set(reviews.flatMap(r => r.genres || []))]
-                .sort()
-                .forEach(g => {
-                    select.innerHTML += `<option value="${g}">${g}</option>`;
-                });
+            [...new Set(reviews.flatMap(r => r.genres || []))].sort().forEach(g => {
+                select.innerHTML += `<option value="${g}">${g}</option>`;
+            });
         }
 
-        // ---------- INICIALIZACIÓN ----------
-        // 1. Verificar sesión admin
-        checkAdminSession();
-        // 2. Renderizar elementos básicos
-        renderGenreCloud();
-        initializeSliders();
-        populateGenreFilter();
-        renderReviews();
-        // 3. Cargar datos remotos (sobrescribe localStorage si tiene éxito)
-        loadRemoteData();
-
-        // Función exportData e importData (se mantienen igual)
+        // FUNCIONES DE IMPORTAR/EXPORTAR (se mantienen)
         function exportData() {
-            const data = {
-                reviews: JSON.parse(localStorage.getItem('myReviews_manga')) || [],
-                suggestions: JSON.parse(localStorage.getItem('manga_suggestions')) || [],
-                customGenres: JSON.parse(localStorage.getItem('customGenres_manga')) || []
-            };
+            const data = { reviews, suggestions, customGenres };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `manga_archive_backup_${new Date().toISOString().slice(0,10)}.json`;
+            a.download = `manga_archive_backup_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
             showToast("ARCHIVO EXPORTADO");
@@ -835,9 +873,9 @@
             reader.onload = function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
-                    reviews = data.reviews || [];
-                    suggestions = data.suggestions || [];
-                    customGenres = data.customGenres || [];
+                    if (data.reviews) reviews = data.reviews;
+                    if (data.suggestions) suggestions = data.suggestions;
+                    if (data.customGenres) customGenres = data.customGenres;
                     localStorage.setItem('myReviews_manga', JSON.stringify(reviews));
                     localStorage.setItem('manga_suggestions', JSON.stringify(suggestions));
                     localStorage.setItem('customGenres_manga', JSON.stringify(customGenres));
@@ -845,7 +883,7 @@
                     renderReviews();
                     populateGenreFilter();
                     showToast("DATOS IMPORTADOS");
-                } catch(err) {
+                } catch (err) {
                     console.error(err);
                     alert(err.name + "\n\n" + err.message);
                     showToast("JSON INVÁLIDO");
@@ -854,8 +892,17 @@
             reader.readAsText(file);
         }
 
-        // Exponer funciones globalmente para los onclick de HTML
-        window.syncFromRemote = syncFromRemote;
+        // ---------- INICIALIZACIÓN ----------
+        checkAdminSession();
+        // Cargar datos iniciales (local + remoto)
+        loadInitialData();
+        // Inicializar sliders y género
+        initializeSliders();
+        renderGenreCloud();
+        populateGenreFilter();
+
+        // Exponer funciones globales
+        window.syncFromGitHub = syncFromGitHub;
         window.exportData = exportData;
         window.importData = importData;
         window.toggleAdminMode = toggleAdminMode;
@@ -873,7 +920,6 @@
         window.toggleGenre = toggleGenre;
         window.toggleVillainRating = toggleVillainRating;
         window.renderReviews = renderReviews;
-        window.syncFromRemote = syncFromRemote; // para el botón
     </script>
 </body>
 </html>
